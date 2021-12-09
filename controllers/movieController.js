@@ -11,8 +11,7 @@ const billModel = require('../models/bill');
 const directorModel = require('../models/director');
 const cinemaModel = require('../models/cinema');
 const actorModel = require('../models/actor');
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+const nodemailer = require("nodemailer");
 const app = express();
 const isAuth = (req,res, next)=>{
     if(req.session.isAuth){
@@ -26,9 +25,9 @@ app.get('/send',(req,res)=>{
      const host=req.get('host');
     const link="http://"+req.get('host')+"/verify/"+rand;
     const msg ={
-          to:"thanhlam13102001@gmail.com",
+          to:"webcardbank74@gmail.com",
     from:"webcardbank74@gmail.com",
-    subject:"Please confirm your Email account",
+    subject:"aaa",
     html: "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>",
     }
     sgMail.send(msg,function(err,info){
@@ -150,13 +149,20 @@ app.post('/checkpin',isAuth, async(req,res)=>{
     bill.pin=rand;
      const host=req.get('host');
     const link="http://"+req.get('host')+"/Movies/verify/"+rand;
+    const smtpTransport = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+        user: "webcardbank74@gmail.com",
+        pass: "card@!1234"
+    }
+});
     const msg ={
-          to:"thanhlam13102001@gmail.com",
-    from:"webcardbank74@gmail.com",
+          to:email,    
     subject:"Please confirm your Email account",
     html: "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>",
     }
-    sgMail.send(msg,function(err,info){
+    console.log(msg);
+    smtpTransport.sendMail(msg,function(err,info){
 if(err)
 {console.log("email not send"); res.redirect('/Error');}
 else
